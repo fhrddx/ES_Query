@@ -301,3 +301,6 @@ F:\Git\ES_Query\Log\Log\bin\zh-Hans\Microsoft.Owin.Security.MicrosoftAccount.res
 F:\Git\ES_Query\Log\Log\obj\Debug\Log.csprojResolveAssemblyReference.cache
 F:\Git\ES_Query\Log\Log\obj\Debug\Log.dll
 F:\Git\ES_Query\Log\Log\obj\Debug\Log.pdb
+F:\Git\ES_Query\Log\Log\bin\PlainElastic.Net.dll
+F:\Git\ES_Query\Log\Log\bin\PlainElastic.Net.pdb
+F:\Git\ES_Query\Log\Log\bin\PlainElastic.Net.xml

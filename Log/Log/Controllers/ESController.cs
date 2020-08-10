@@ -8,8 +8,7 @@ namespace Log.Controllers
 {
     public class ESController : Controller
     {
-        // GET: ES
-        public ActionResult Index()
+        public ActionResult Search()
         {
             return View();
         }

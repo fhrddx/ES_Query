@@ -242,6 +242,7 @@ F:\Git\ES_Query\Log\Log\bin\Microsoft.Owin.Security.Twitter.dll
 F:\Git\ES_Query\Log\Log\bin\Microsoft.Web.Infrastructure.dll
 F:\Git\ES_Query\Log\Log\bin\Newtonsoft.Json.dll
 F:\Git\ES_Query\Log\Log\bin\Owin.dll
+F:\Git\ES_Query\Log\Log\bin\PlainElastic.Net.dll
 F:\Git\ES_Query\Log\Log\bin\System.Web.Helpers.dll
 F:\Git\ES_Query\Log\Log\bin\System.Web.Mvc.dll
 F:\Git\ES_Query\Log\Log\bin\System.Web.Optimization.dll
@@ -257,6 +258,8 @@ F:\Git\ES_Query\Log\Log\bin\Microsoft.AI.WindowsServer.xml
 F:\Git\ES_Query\Log\Log\bin\Microsoft.ApplicationInsights.xml
 F:\Git\ES_Query\Log\Log\bin\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.xml
 F:\Git\ES_Query\Log\Log\bin\Newtonsoft.Json.xml
+F:\Git\ES_Query\Log\Log\bin\PlainElastic.Net.pdb
+F:\Git\ES_Query\Log\Log\bin\PlainElastic.Net.xml
 F:\Git\ES_Query\Log\Log\bin\System.Web.Helpers.xml
 F:\Git\ES_Query\Log\Log\bin\System.Web.Mvc.xml
 F:\Git\ES_Query\Log\Log\bin\System.Web.Optimization.xml
@@ -298,9 +301,5 @@ F:\Git\ES_Query\Log\Log\bin\zh-Hans\Microsoft.Owin.Security.Facebook.resources.d
 F:\Git\ES_Query\Log\Log\bin\zh-Hans\Microsoft.Owin.Security.Google.resources.dll
 F:\Git\ES_Query\Log\Log\bin\zh-Hans\Microsoft.Owin.Security.Twitter.resources.dll
 F:\Git\ES_Query\Log\Log\bin\zh-Hans\Microsoft.Owin.Security.MicrosoftAccount.resources.dll
-F:\Git\ES_Query\Log\Log\obj\Debug\Log.csprojResolveAssemblyReference.cache
 F:\Git\ES_Query\Log\Log\obj\Debug\Log.dll
 F:\Git\ES_Query\Log\Log\obj\Debug\Log.pdb
-F:\Git\ES_Query\Log\Log\bin\PlainElastic.Net.dll
-F:\Git\ES_Query\Log\Log\bin\PlainElastic.Net.pdb
-F:\Git\ES_Query\Log\Log\bin\PlainElastic.Net.xml

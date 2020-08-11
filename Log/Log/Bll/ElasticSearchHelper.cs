@@ -9,6 +9,8 @@ using System.Linq;
 
 namespace Log.Bll
 {
+    // PlainElastic.Net 官方文档 https://github.com/Yegoroff/PlainElastic.Net
+
     public class ElasticSearchHelper
     {
         public static readonly ElasticSearchHelper Intance = new ElasticSearchHelper();
@@ -17,35 +19,97 @@ namespace Log.Bll
 
         private ElasticSearchHelper()
         {
-            var node = new Uri("http://localhost:9200");
             Client = new ElasticConnection("localhost", 9200);
         }
 
-        /*
-        /// <summary>
-        /// 数据索引
-        /// </summary>       
-        /// <param name="indexName">索引名称</param>
-        /// <param name="indexType">索引类型</param>
-        /// <param name="id">索引文档id，不能重复,如果重复则覆盖原先的</param>
-        /// <param name="jsonDocument">要索引的文档,json格式</param>
-        /// <returns></returns>
-        public IndexResult Index(string indexName, string indexType, string id, string jsonDocument)
+        #region 第一步：创建索引库和映射规则
+        public bool BuildStudentMapping()
+        {
+            #region 第一个坑，也是版本问题：不能用 PlainElastic.Net 这种方式建立 mapping ，原因是ES版本是7.8.0 ，这个版本不再支持 string , 取而代之的是 text 
+            /*string mapping = new MapBuilder<Student>()
+                                 .RootObject(typeName: "mappings",
+                                    map: r => r.All(a => a.Enabled(false))
+                                       .Dynamic(false)
+                                       .Properties(pr => pr.String(person => person.name, f => f.Analyzer(DefaultAnalyzers.standard).Boost(2))
+                                                           .String(person => person.school, f => f.Analyzer("ik_max_word"))
+                                                           .String(person => person.desc, f => f.Analyzer("ik_max_word"))
+                                       .Number(person => person.@class)
+                                       .Number(person => person.chinese)
+                                       .Number(person => person.english)
+                                       .Number(person => person.math)
+                                       )
+                                  ).BuildBeautified();*/
+            #endregion
+            var mapping = new
+            {
+                mappings = new
+                {
+                    properties = new
+                    {
+                        name = new
+                        {
+                            type = "text",
+                            analyzer = "standard"
+                        },
+                        school = new
+                        {
+                            type = "text",
+                            analyzer = "ik_max_word"
+                        },
+                        desc = new
+                        {
+                            type = "text",
+                            analyzer = "ik_max_word"
+                        },
+                        @class = new
+                        {
+                            type = "integer"
+                        },
+                        chinese = new
+                        {
+                            type = "integer"
+                        },
+                        english = new
+                        {
+                            type = "integer"
+                        },
+                        math = new
+                        {
+                            type = "integer"
+                        }
+                    }
+                }
+            };
+            string jsonDocument = new JsonNetSerializer().Serialize(mapping);
+            OperationResult operationResult = Client.Put("db_student_test", jsonDocument);
+            CommandResult result = new JsonNetSerializer().ToCommandResult(operationResult.Result);
+            if (result?.acknowledged != null)
+                return result.acknowledged;
+            return false;
+        }
+        #endregion
+
+        #region 插入索引文档
+        public IndexResult CreateIndex(string indexName, string id, string jsonDocument)
         {
             var serializer = new JsonNetSerializer();
-            string cmd = new IndexCommand(indexName, indexType, id);
+            //注意ES版本是8.7.0，type只能是默认的、唯一的 _doc
+            string cmd = new IndexCommand(indexName, "_doc", id);
             OperationResult result = Client.Put(cmd, jsonDocument);
             var indexResult = serializer.ToIndexResult(result.Result);
             return indexResult;
         }
 
-        public IndexResult Index(string indexName, string indexType, string id, object document)
+        public IndexResult CreateIndex(string indexName, string id, object document)
         {
             var serializer = new JsonNetSerializer();
             var jsonDocument = serializer.Serialize(document);
-            return Index(indexName, indexType, id, jsonDocument);
+            return CreateIndex(indexName, id, jsonDocument);
         }
+        #endregion
 
+        #region 参考代码
+        /*
         //全文检索，单个字段或者多字段 或关系
         //字段intro 包含词组key中的任意一个单词
         public personList Search<person>(string indexName, string indexType, string key, int from, int size)
@@ -262,21 +326,7 @@ namespace Log.Bll
             return datalist;
         }
 
-        //分词映射
-        private static string BuildCompanyMapping()
-        {
-            return new MapBuilder<person>()
-                .RootObject(typeName: "person",
-                            map: r => r
-                    .All(a => a.Enabled(false))
-                    .Dynamic(false)
-                    .Properties(pr => pr
-                        .String(person => person.name, f => f.Analyzer(DefaultAnalyzers.standard).Boost(2))
-                        .String(person => person.intro, f => f.Analyzer("ik"))
-                        )
-              )
-              .BuildBeautified();
-        }
+       
 
         //将语句用ik分词，返回分词结果的集合
         private List<string> GetIKTokenFromStr(string key)
@@ -287,5 +337,20 @@ namespace Log.Bll
             var list = serializer.Deserialize(result, typeof(ik)) as ik;
             return list.tokens.Select(c => c.token).ToList();
         }*/
+
+        //分词映射
+        //private static string BuildCompanyMapping()
+        //{
+        //    return new MapBuilder<person>()
+        //               .RootObject(typeName: "person",
+        //                    map: r => r.All(a => a.Enabled(false))
+        //                               .Dynamic(false)
+        //                               .Properties(pr => pr.String(person => person.name, f => f.Analyzer(DefaultAnalyzers.standard).Boost(2))
+        //                                                   .String(person => person.intro, f => f.Analyzer("ik"))
+
+        //                               )
+        //              ).BuildBeautified();
+        //}
+        #endregion
     }
 }

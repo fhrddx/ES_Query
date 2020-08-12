@@ -14,6 +14,8 @@ namespace Log.Bll
 
     // 另外一个参考文档  https://github.com/elastic/elasticsearch-net
 
+    //https://www.elastic.co/guide/en/elasticsearch/client/net-api/current/nest.html
+
     public class ElasticSearchHelper
     {
         public static readonly ElasticSearchHelper Intance = new ElasticSearchHelper();

@@ -6,10 +6,13 @@ using PlainElastic.Net.Serialization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Log.Bll
 {
-    // PlainElastic.Net 官方文档 https://github.com/Yegoroff/PlainElastic.Net
+    // PlainElastic.Net 官方文档 https://github.com/Yegoroff/PlainElastic.Net  这个其实已经是过时的了
+
+    // 另外一个参考文档  https://github.com/elastic/elasticsearch-net
 
     public class ElasticSearchHelper
     {
@@ -22,7 +25,7 @@ namespace Log.Bll
             Client = new ElasticConnection("localhost", 9200);
         }
 
-        #region 第一步：创建索引库和映射规则
+        #region 创建索引库和映射规则
         public bool BuildStudentMapping()
         {
             #region 第一个坑，也是版本问题：不能用 PlainElastic.Net 这种方式建立 mapping ，原因是ES版本是7.8.0 ，这个版本不再支持 string , 取而代之的是 text 
@@ -81,7 +84,7 @@ namespace Log.Bll
                 }
             };
             string jsonDocument = new JsonNetSerializer().Serialize(mapping);
-            OperationResult operationResult = Client.Put("db_student_test", jsonDocument);
+            OperationResult operationResult = Client.Put("db_student_test1", jsonDocument);
             CommandResult result = new JsonNetSerializer().ToCommandResult(operationResult.Result);
             if (result?.acknowledged != null)
                 return result.acknowledged;
@@ -89,22 +92,33 @@ namespace Log.Bll
         }
         #endregion
 
-        #region 插入索引文档
-        public IndexResult CreateIndex(string indexName, string id, string jsonDocument)
+        #region 给索引库 db_student_test 起一个别名 student_test
+        public bool Alias()
+        {
+            OperationResult operationResult = Client.Put("db_student_test1/_alias/student_test1");
+            CommandResult result = new JsonNetSerializer().ToCommandResult(operationResult.Result);
+            if (result?.acknowledged != null)
+                return result.acknowledged;
+            return false;
+        }
+        #endregion
+
+        #region 插入索引文档数据
+        public async Task<IndexResult> CreateIndex(string indexName, string id, string jsonDocument)
         {
             var serializer = new JsonNetSerializer();
             //注意ES版本是8.7.0，type只能是默认的、唯一的 _doc
             string cmd = new IndexCommand(indexName, "_doc", id);
-            OperationResult result = Client.Put(cmd, jsonDocument);
+            OperationResult result = await Client.PutAsync(cmd, jsonDocument);
             var indexResult = serializer.ToIndexResult(result.Result);
             return indexResult;
         }
 
-        public IndexResult CreateIndex(string indexName, string id, object document)
+        public async Task<IndexResult> CreateIndex(string indexName, string id, object document)
         {
             var serializer = new JsonNetSerializer();
             var jsonDocument = serializer.Serialize(document);
-            return CreateIndex(indexName, id, jsonDocument);
+            return await CreateIndex(indexName, id, jsonDocument);
         }
         #endregion
 

@@ -48,14 +48,12 @@ F:\Git\ES_Query\Log\NEST\bin\System.Web.WebPages.Deployment.dll
 F:\Git\ES_Query\Log\NEST\bin\System.Web.WebPages.dll
 F:\Git\ES_Query\Log\NEST\bin\System.Web.WebPages.Razor.dll
 F:\Git\ES_Query\Log\NEST\bin\WebGrease.dll
-F:\Git\ES_Query\Log\NEST\bin\Elasticsearch.Net.dll
 F:\Git\ES_Query\Log\NEST\bin\Microsoft.AI.DependencyCollector.xml
 F:\Git\ES_Query\Log\NEST\bin\Microsoft.AI.ServerTelemetryChannel.xml
 F:\Git\ES_Query\Log\NEST\bin\Microsoft.AI.Web.xml
 F:\Git\ES_Query\Log\NEST\bin\Microsoft.AI.WindowsServer.xml
 F:\Git\ES_Query\Log\NEST\bin\Microsoft.ApplicationInsights.xml
 F:\Git\ES_Query\Log\NEST\bin\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.xml
-F:\Git\ES_Query\Log\NEST\bin\Nest.xml
 F:\Git\ES_Query\Log\NEST\bin\System.Web.Helpers.xml
 F:\Git\ES_Query\Log\NEST\bin\System.Web.Mvc.xml
 F:\Git\ES_Query\Log\NEST\bin\System.Web.Optimization.xml
@@ -98,6 +96,7 @@ F:\Git\ES_Query\Log\NEST\bin\zh-Hans\Microsoft.Owin.Security.Facebook.resources.
 F:\Git\ES_Query\Log\NEST\bin\zh-Hans\Microsoft.Owin.Security.Google.resources.dll
 F:\Git\ES_Query\Log\NEST\bin\zh-Hans\Microsoft.Owin.Security.Twitter.resources.dll
 F:\Git\ES_Query\Log\NEST\bin\zh-Hans\Microsoft.Owin.Security.MicrosoftAccount.resources.dll
-F:\Git\ES_Query\Log\NEST\obj\Debug\NESTDemo.csprojResolveAssemblyReference.cache
 F:\Git\ES_Query\Log\NEST\obj\Debug\NEST.dll
 F:\Git\ES_Query\Log\NEST\obj\Debug\NEST.pdb
+F:\Git\ES_Query\Log\NEST\bin\Microsoft.QualityTools.Testing.Fakes.dll
+F:\Git\ES_Query\Log\NEST\bin\zh-Hans\Microsoft.QualityTools.Testing.Fakes.resources.dll

@@ -1,4 +1,5 @@
-﻿using System;
+﻿//using Nest;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -10,6 +11,10 @@ namespace NEST.Controllers
     {
         public ActionResult Index()
         {
+            //var settings = new ConnectionSettings(new Uri("http://localhost:9200")).DefaultIndex("db_student");
+            //var Client = new ElasticClient(settings);
+
+            // client.CreateMapping();
             return View();
         }
 

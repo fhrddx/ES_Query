@@ -106,21 +106,23 @@ namespace Log.Bll
         #endregion
 
         #region 插入索引文档数据
-        public async Task<IndexResult> CreateIndex(string indexName, string id, string jsonDocument)
+        public IndexResult CreateIndex(string indexName, string id, string jsonDocument)
         {
             var serializer = new JsonNetSerializer();
             //注意ES版本是8.7.0，type只能是默认的、唯一的 _doc
             string cmd = new IndexCommand(indexName, "_doc", id);
-            OperationResult result = await Client.PutAsync(cmd, jsonDocument);
+            Client.Timeout = 30000;
+            OperationResult result = Client.Put(cmd, jsonDocument);
             var indexResult = serializer.ToIndexResult(result.Result);
+            GC.Collect();
             return indexResult;
         }
 
-        public async Task<IndexResult> CreateIndex(string indexName, string id, object document)
+        public IndexResult CreateIndex(string indexName, string id, object document)
         {
             var serializer = new JsonNetSerializer();
             var jsonDocument = serializer.Serialize(document);
-            return await CreateIndex(indexName, id, jsonDocument);
+            return CreateIndex(indexName, id, jsonDocument);
         }
         #endregion
 

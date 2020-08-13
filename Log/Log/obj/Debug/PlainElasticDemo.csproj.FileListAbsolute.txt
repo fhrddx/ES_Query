@@ -99,6 +99,5 @@ F:\Git\ES_Query\Log\Log\bin\zh-Hans\Microsoft.Owin.Security.Facebook.resources.d
 F:\Git\ES_Query\Log\Log\bin\zh-Hans\Microsoft.Owin.Security.Google.resources.dll
 F:\Git\ES_Query\Log\Log\bin\zh-Hans\Microsoft.Owin.Security.Twitter.resources.dll
 F:\Git\ES_Query\Log\Log\bin\zh-Hans\Microsoft.Owin.Security.MicrosoftAccount.resources.dll
-F:\Git\ES_Query\Log\Log\obj\Debug\PlainElasticDemo.csprojResolveAssemblyReference.cache
 F:\Git\ES_Query\Log\Log\obj\Debug\Log.dll
 F:\Git\ES_Query\Log\Log\obj\Debug\Log.pdb

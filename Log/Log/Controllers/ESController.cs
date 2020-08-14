@@ -37,7 +37,7 @@ namespace Log.Controllers
                 string stu_name = name.Substring(nameStartIndex * 2, 2);
                 try
                 {
-                    string desc = TestData.content.Substring((r.Next(0, content_length - 700)), 100);
+                    string desc = TestData.content.Substring((r.Next(0, content_length - 700)), 20);
                     desc = desc.Trim();
                     desc.Replace("\r\n", "");
                     Student model = new Student()

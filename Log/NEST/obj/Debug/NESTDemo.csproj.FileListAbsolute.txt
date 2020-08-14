@@ -100,3 +100,4 @@ F:\Git\ES_Query\Log\NEST\obj\Debug\NEST.dll
 F:\Git\ES_Query\Log\NEST\obj\Debug\NEST.pdb
 F:\Git\ES_Query\Log\NEST\bin\Microsoft.QualityTools.Testing.Fakes.dll
 F:\Git\ES_Query\Log\NEST\bin\zh-Hans\Microsoft.QualityTools.Testing.Fakes.resources.dll
+F:\Git\ES_Query\Log\NEST\obj\Debug\NESTDemo.csprojFakesResolveAssemblyReference.cache

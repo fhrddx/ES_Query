@@ -14,8 +14,8 @@ namespace Log
 
             routes.MapRoute(
                 name: "Default",
-                url: "{controller}/{action}/{id}",
-                defaults: new { controller = "ES", action = "Index", id = UrlParameter.Optional }
+                url: "{controller}/{action}/{key}",
+                defaults: new { controller = "ES", action = "Index", key = UrlParameter.Optional }
             );
         }
     }

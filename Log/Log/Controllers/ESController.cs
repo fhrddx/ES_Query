@@ -26,7 +26,7 @@ namespace Controllers
             var model = ElasticSearchHelper.Intance.Query(key.Trim(), 0, 10);
             sw.Stop();
             ViewBag.Message = $"共耗时{sw.ElapsedMilliseconds}毫秒";
-            return View("~/Views/ES/Test.cshtml", model);
+            return View("~/Views/ES/Index.cshtml", model);
         }
 
         public object Search()

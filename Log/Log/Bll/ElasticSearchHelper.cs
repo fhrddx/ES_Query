@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Log.Bll
+namespace Bll
 {
     // PlainElastic.Net 官方文档 https://github.com/Yegoroff/PlainElastic.Net  这个其实已经是过时的了
 

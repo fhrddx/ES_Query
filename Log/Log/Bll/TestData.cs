@@ -1,5 +1,5 @@
 ﻿
-namespace Log.Bll
+namespace Bll
 {
     public class TestData
     {

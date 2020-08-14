@@ -1,9 +1,9 @@
-﻿using Log.Bll;
+﻿using Bll;
 using System;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 
-namespace Log.Controllers
+namespace Controllers
 {
     public class ESController : Controller
     {
@@ -36,7 +36,7 @@ namespace Log.Controllers
                         math = r.Next(15, 60) + r2.Next(0, 40),
                         english = r.Next(21, 70) + r2.Next(0, 30),
                         @class = c,
-                        desc = desc + " vincent Thomas 华南理工大学"
+                        desc = desc + TestData.school[r2.Next(0, school_length)]
                     };
                     ElasticSearchHelper.Intance.CreateIndex("db_student_test1", Guid.NewGuid().ToString(), model);
                 }

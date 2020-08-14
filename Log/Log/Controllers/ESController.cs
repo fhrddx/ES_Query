@@ -1,5 +1,4 @@
 ﻿using Log.Bll;
-using Log.Model;
 using System;
 using System.Threading.Tasks;
 using System.Web.Mvc;

@@ -1,5 +1,4 @@
-﻿using Log.Model;
-using PlainElastic.Net;
+﻿using PlainElastic.Net;
 using PlainElastic.Net.Mappings;
 using PlainElastic.Net.Queries;
 using PlainElastic.Net.Serialization;
@@ -370,5 +369,22 @@ namespace Log.Bll
         //              ).BuildBeautified();
         //}
         #endregion
+    }
+
+    public class Student
+    {
+        public string name { get; set; }
+
+        public string school { get; set; }
+
+        public int chinese { get; set; }
+
+        public int math { get; set; }
+
+        public int english { get; set; }
+
+        public int @class { get; set; }
+
+        public string desc { get; set; }
     }
 }

@@ -388,6 +388,7 @@
     <Content Include="UI\assets\fonts\glyphicons-halflings-regular.woff" />
     <Content Include="UI\assets\fonts\glyphicons-halflings-regular.woff2" />
     <Content Include="Views\ES\Search.cshtml" />
+    <Content Include="Views\ES\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

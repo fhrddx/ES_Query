@@ -1,5 +1,6 @@
 ﻿using Bll;
 using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 
@@ -7,6 +8,27 @@ namespace Controllers
 {
     public class ESController : Controller
     {
+        //测试单个词的搜索
+        public ActionResult Index(string key = "黛玉")
+        {
+            Stopwatch sw = new Stopwatch();
+            sw.Restart();
+            var model = ElasticSearchHelper.Intance.Term(key.Trim(), 0, 10);
+            sw.Stop();
+            ViewBag.Message = $"共耗时{sw.ElapsedMilliseconds}毫秒";
+            return View(model);
+        }
+
+        public ActionResult Query(string key = "宝玉黛玉螃蟹宴作诗")
+        {
+            Stopwatch sw = new Stopwatch();
+            sw.Restart();
+            var model = ElasticSearchHelper.Intance.Query(key.Trim(), 0, 10);
+            sw.Stop();
+            ViewBag.Message = $"共耗时{sw.ElapsedMilliseconds}毫秒";
+            return View("~/Views/ES/Test.cshtml", model);
+        }
+
         public object Search()
         {
             //第一步：建立索引库，设置映射规则

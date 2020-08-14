@@ -1,19 +1,12 @@
 ﻿using PlainElastic.Net;
-using PlainElastic.Net.Mappings;
 using PlainElastic.Net.Queries;
 using PlainElastic.Net.Serialization;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Bll
 {
-    // PlainElastic.Net 官方文档 https://github.com/Yegoroff/PlainElastic.Net  这个其实已经是过时的了
-
-    // 另外一个参考文档  https://github.com/elastic/elasticsearch-net
-
-    //https://www.elastic.co/guide/en/elasticsearch/client/net-api/current/nest.html
+    //PlainElastic.Net 说明文档 https://github.com/Yegoroff/PlainElastic.Net
 
     public class ElasticSearchHelper
     {
@@ -125,252 +118,80 @@ namespace Bll
         }
         #endregion
 
-        #region 参考代码
-        /*
-        //全文检索，单个字段或者多字段 或关系
-        //字段intro 包含词组key中的任意一个单词
-        public personList Search<person>(string indexName, string indexType, string key, int from, int size)
+        #region  单个关键词查询（分页、高亮、And逻辑、范围查询、排序）
+        public ElasticsearchResult<Student> Term(string key, int from = 0, int size = 10)
         {
-            string cmd = new SearchCommand(indexName, indexType);
-            string query = new QueryBuilder<person>()
-                //1 查询
-                .Query(b =>
-                            b.Bool(m =>
-                                //并且关系
-                                m.Must(t =>
+            if (string.IsNullOrEmpty(key))
+                return null;
 
-                                   //分词的最小单位或关系查询
-                                   t.QueryString(t1 => t1.DefaultField("intro").Query(key))
-                                     //.QueryString(t1 => t1.DefaultField("name").Query(key))
-                                     // t .Terms(t2=>t2.Field("intro").Values("研究","方鸿渐"))
-                                     //范围查询
-                                     // .Range(r =>  r.Field("age").From("100").To("200") )  
-                                     )
-                                  )
-                                )
-                 //分页
-                 .From(from)
-                 .Size(size)
-                  //排序
-                  // .Sort(c => c.Field("age", SortDirection.desc))
-                  //添加高亮
-                  .Highlight(h => h
-                      .PreTags("<b>")
-                      .PostTags("</b>")
-                      .Fields(
-                             f => f.FieldName("intro").Order(HighlightOrder.score),
-                             f => f.FieldName("_all")
+            key = key.Trim();
+            string cmd = new SearchCommand("student_test1", "_doc");
+            var query = new QueryBuilder<Student>().Query(
+                              b => b.Bool(m => m.Must(t =>
+                                   t.Term(d => d.Field("desc").Value(key))
+                                    .Range(d => d.Field("chinese").From("90").To("100"))
+                                    .Range(d => d.Field("math").Gt("90"))
+                                    .Range(d => d.Field("english").Gt("90"))
+                                 )
+                               )
                              )
-                     )
-                    .Build();
-
+                             .From(from)
+                             .Size(size)
+                             .Sort(s => s.Field("chinese", SortDirection.desc).Field("math", SortDirection.desc).Field("english", SortDirection.desc))
+                             .Highlight(h => h
+                                  .PreTags("<span class=\"label label-sm label-danger\">")
+                                  .PostTags("</span>")
+                                  .Fields(
+                                      f => f.FieldName("desc").Order(HighlightOrder.score)
+                                   )
+                              )
+                             .Build();
 
             string result = Client.Post(cmd, query);
-            var serializer = new JsonNetSerializer();
-            var list = serializer.ToSearchResult<person>(result);
-            personList datalist = new personList();
-            datalist.hits = list.hits.total;
-            datalist.took = list.took;
-            var personList = list.hits.hits.Select(c => new Log.Model.person() //new logmodel person()
-            {
-                id = c._source.id,
-                age = c._source.age,
-                birthday = c._source.birthday,
-                intro = string.Join("", c.highlight["intro"]), //高亮显示的内容，一条记录中出现了几次
-                name = c._source.name,
-                sex = c._source.sex,
-
-            });
-            datalist.list.AddRange(personList);
-            return datalist;
+            var list = new JsonNetSerializer().Deserialize<ElasticsearchResult<Student>>(result);
+            return list;
         }
+        #endregion
 
-
-        //全文检索，多字段 并关系
-        //字段intro 或者name 包含词组key
-        public personList SearchFullFileds<person>(string indexName, string indexType, string key, int from, int size)
+        #region  多个关键词查询（分页、高亮、And逻辑、范围查询、排序）
+        public ElasticsearchResult<Student> Query(string key, int from = 0, int size = 10)
         {
-            MustQuery<person> mustNameQueryKeys = new MustQuery<person>();
-            MustQuery<person> mustIntroQueryKeys = new MustQuery<person>();
-            var arrKeys = GetIKTokenFromStr(key);
-            foreach (var item in arrKeys)
-            {
-                mustNameQueryKeys = mustNameQueryKeys.Term(t3 => t3.Field("name").Value(item)) as MustQuery<person>;
-                mustIntroQueryKeys = mustIntroQueryKeys.Term(t3 => t3.Field("intro").Value(item)) as MustQuery<person>;
-            }
-            string cmd = new SearchCommand(indexName, indexType);
-            string query = new QueryBuilder<person>()
-                //1 查询
-                .Query(b =>
-                            b.Bool(m =>
-                                m.Should(t =>
-                                         t.Bool(m1 =>
-                                                     m1.Must(
-                                                             t2 =>
-                                                                 //t2.Term(t3=>t3.Field("name").Value("研究"))
-                                                                 //   .Term(t3=>t3.Field("name").Value("方鸿渐"))  
-                                                                 mustNameQueryKeys
-                                                             )
-                                                )
-                                       )
-                               .Should(t =>
-                                         t.Bool(m1 =>
-                                                     m1.Must(t2 =>
-                                                                     //t2.Term(t3 => t3.Field("intro").Value("研究"))
-                                                                     //.Term(t3 => t3.Field("intro").Value("方鸿渐"))  
-                                                                     mustIntroQueryKeys
-                                                            )
-                                                )
-                                      )
-                                  )
-                        )
-                 //分页
-                 .From(from)
-                 .Size(size)
-                  //排序
-                  // .Sort(c => c.Field("age", SortDirection.desc))
-                  //添加高亮
-                  .Highlight(h => h
-                      .PreTags("<b>")
-                      .PostTags("</b>")
-                      .Fields(
-                             f => f.FieldName("intro").Order(HighlightOrder.score),
-                              f => f.FieldName("name").Order(HighlightOrder.score)
+            if (string.IsNullOrEmpty(key))
+                return null;
+
+            key = key.Trim();
+            string cmd = new SearchCommand("student_test1", "_doc");
+            var query = new QueryBuilder<Student>().Query(
+                              b => b.Bool(m => m.Must(t =>
+                                   //其实也是可以用 t.match() 的，可以试一下
+                                   t.QueryString(d => d.DefaultField("desc").Query(key))
+                                    .Range(d => d.Field("chinese").From("90").To("100"))
+                                    .Range(d => d.Field("math").Gt("90"))
+                                    .Range(d => d.Field("english").Gt("90"))
+                                 )
+                               )
                              )
-                     )
-                    .Build();
+                             .From(from)
+                             .Size(size)
+                             //这里不再按照分数来排序，这时ES会根据关键词匹配度来排序，出现在最前的，应该是最匹配的
+                             //.Sort(s => s.Field("chinese", SortDirection.desc).Field("math", SortDirection.desc).Field("english", SortDirection.desc))
+                             .Highlight(h => h
+                                  .PreTags("<span class=\"label label-sm label-danger\">")
+                                  .PostTags("</span>")
+                                  .Fields(
+                                      f => f.FieldName("desc").Order(HighlightOrder.score)
+                                   )
+                              )
+                             .Build();
 
             string result = Client.Post(cmd, query);
-            var serializer = new JsonNetSerializer();
-            var list = serializer.ToSearchResult<person>(result);
-            personList datalist = new personList();
-            datalist.hits = list.hits.total;
-            datalist.took = list.took;
-            var personList = list.hits.hits.Select(c => new Model.person()
-            {
-                id = c._source.id,
-                age = c._source.age,
-                birthday = c._source.birthday,
-                intro = c.highlight == null || !c.highlight.Keys.Contains("intro") ? c._source.intro : string.Join("", c.highlight["intro"]), //高亮显示的内容，一条记录中出现了几次
-                name = c.highlight == null || !c.highlight.Keys.Contains("name") ? c._source.name : string.Join("", c.highlight["name"]),
-                sex = c._source.sex
-            });
-            datalist.list.AddRange(personList);
-            return datalist;
+            var list = new JsonNetSerializer().Deserialize<ElasticsearchResult<Student>>(result);
+            return list;
         }
-
-        //全文检索，多字段 并关系
-        //搜索age在100到200之间，并且字段intro 或者name 包含词组key
-        public personList SearchFullFiledss<person>(string indexName, string indexType, string key, int from, int size)
-        {
-            MustQuery<person> mustNameQueryKeys = new MustQuery<person>();
-            MustQuery<person> mustIntroQueryKeys = new MustQuery<person>();
-            var arrKeys = GetIKTokenFromStr(key);
-            foreach (var item in arrKeys)
-            {
-                mustNameQueryKeys = mustNameQueryKeys.Term(t3 => t3.Field("name").Value(item)) as MustQuery<person>;
-                mustIntroQueryKeys = mustIntroQueryKeys.Term(t3 => t3.Field("intro").Value(item)) as MustQuery<person>;
-            }
-
-            string cmd = new SearchCommand(indexName, indexType);
-            string query = new QueryBuilder<person>()
-                //1 查询
-                .Query(b =>
-                            b.Bool(m =>
-                                m.Must(t =>
-                                          t.Range(r => r.Field("age").From("1").To("500"))
-                                          .Bool(ms =>
-                                                    ms.Should(ts =>
-                                                             ts.Bool(m1 =>
-                                                                         m1.Must(
-                                                                                 t2 =>
-                                                                                      //t2.Term(t3=>t3.Field("name").Value("研究"))
-                                                                                      //   .Term(t3=>t3.Field("name").Value("方鸿渐"))  
-                                                                                      //
-                                                                                      mustNameQueryKeys
-                                                                                 )
-                                                                    )
-                                                           )
-                                                   .Should(ts =>
-                                                             ts.Bool(m1 =>
-                                                                         m1.Must(t2 =>
-                                                                                        //t2.Term(t3 => t3.Field("intro").Value("研究"))
-                                                                                        //.Term(t3 => t3.Field("intro").Value("方鸿渐"))  
-
-                                                                                        //
-                                                                                        mustIntroQueryKeys
-                                                                                )
-                                                                    )
-                                                          )
-                                                      )
-                                                        )
-                                                      )
-                       )
-                 //分页
-                 .From(from)
-                 .Size(size)
-                  //排序
-                  // .Sort(c => c.Field("age", SortDirection.desc))
-                  //添加高亮
-                  .Highlight(h => h
-                      .PreTags("<b>")
-                      .PostTags("</b>")
-                      .Fields(
-                             f => f.FieldName("intro").Order(HighlightOrder.score),
-                              f => f.FieldName("name").Order(HighlightOrder.score)
-                             )
-                     )
-                    .Build();
-
-
-            string result = Client.Post(cmd, query);
-            var serializer = new JsonNetSerializer();
-            var list = serializer.ToSearchResult<person>(result);
-            personList datalist = new personList();
-            datalist.hits = list.hits.total;
-            datalist.took = list.took;
-            var personList = list.hits.hits.Select(c => new Model.person()
-            {
-                id = c._source.id,
-                age = c._source.age,
-                birthday = c._source.birthday,
-                intro = c.highlight == null || !c.highlight.Keys.Contains("intro") ? c._source.intro : string.Join("", c.highlight["intro"]), //高亮显示的内容，一条记录中出现了几次
-                name = c.highlight == null || !c.highlight.Keys.Contains("name") ? c._source.name : string.Join("", c.highlight["name"]),
-                sex = c._source.sex
-
-            });
-            datalist.list.AddRange(personList);
-            return datalist;
-        }
-
-       
-
-        //将语句用ik分词，返回分词结果的集合
-        private List<string> GetIKTokenFromStr(string key)
-        {
-            string s = "/db_test/_analyze?analyzer=ik";
-            var result = Client.Post(s, "{" + key + "}");
-            var serializer = new JsonNetSerializer();
-            var list = serializer.Deserialize(result, typeof(ik)) as ik;
-            return list.tokens.Select(c => c.token).ToList();
-        }*/
-
-        //分词映射
-        //private static string BuildCompanyMapping()
-        //{
-        //    return new MapBuilder<person>()
-        //               .RootObject(typeName: "person",
-        //                    map: r => r.All(a => a.Enabled(false))
-        //                               .Dynamic(false)
-        //                               .Properties(pr => pr.String(person => person.name, f => f.Analyzer(DefaultAnalyzers.standard).Boost(2))
-        //                                                   .String(person => person.intro, f => f.Analyzer("ik"))
-
-        //                               )
-        //              ).BuildBeautified();
-        //}
         #endregion
     }
 
+    #region 辅助类
     public class Student
     {
         public string name { get; set; }
@@ -387,4 +208,58 @@ namespace Bll
 
         public string desc { get; set; }
     }
+
+    public class ElasticsearchShards
+    {
+        public int total { get; set; }
+
+        public int successful { get; set; }
+
+        public int skipped { get; set; }
+
+        public int failed { get; set; }
+    }
+
+    public class ElasticsearchHitTotal
+    {
+        public int value { get; set; }
+
+        public string relation { get; set; }
+    }
+
+    public class HisItem<T>
+    {
+        public string _index { get; set; }
+
+        public string _type { get; set; }
+
+        public string _id { get; set; }
+
+        public double _score { get; set; }
+
+        public T _source { get; set; }
+
+        public Dictionary<string, string[]> highlight { get; set; }
+    }
+
+    public class ElasticsearchHit<T>
+    {
+        public ElasticsearchHitTotal total { get; set; }
+
+        public double max_score { get; set; }
+
+        public List<HisItem<T>> hits { get; set; }
+    }
+
+    public class ElasticsearchResult<T>
+    {
+        public int took { get; set; }
+
+        public bool timed_out { get; set; }
+
+        public ElasticsearchShards _shards { get; set; }
+
+        public ElasticsearchHit<T> hits { get; set; }
+    }
+    #endregion
 }
